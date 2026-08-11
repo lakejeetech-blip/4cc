@@ -582,7 +582,7 @@ word_complete_menu_render(Application_Links *app, Frame_Info frame_info, View_ID
         f32 x_half_padding = x_padding*0.5f;
         
         draw_drop_down(app, face, &block, cursor_p, region, x_padding, x_half_padding,
-                       fcolor_id(defcolor_margin_hover), fcolor_id(defcolor_back));
+          fcolor_id(defcolor_margin_hover), {});
     }
 }
 

@@ -18,11 +18,11 @@ get_item_margin_color(i32 level, i32 sub_id){
         default:
         case UIHighlight_None:
         {
-            margin = fcolor_id(defcolor_list_item, sub_id);
+          margin = fcolor_id({}, sub_id);
         }break;
         case UIHighlight_Hover:
         {
-            margin = fcolor_id(defcolor_list_item_hover, sub_id);
+          margin = fcolor_id(defcolor_list_item_hover, sub_id);
         }break;
         case UIHighlight_Active:
         {
@@ -264,7 +264,7 @@ function Rect_f32
 draw_background_and_margin(Application_Links *app, View_ID view, ARGB_Color margin, ARGB_Color back, f32 width){
     Rect_f32 view_rect = view_get_screen_rect(app, view);
     Rect_f32 inner = rect_inner(view_rect, width);
-    draw_rectangle(app, inner, 0.f, back);
+    //draw_rectangle(app, inner, 0.f, back);
     if (width > 0.f){
         draw_margin(app, view_rect, inner, margin);
     }
@@ -293,13 +293,13 @@ draw_background_and_margin(Application_Links *app, View_ID view, FColor margin, 
 function Rect_f32
 draw_background_and_margin(Application_Links *app, View_ID view, b32 is_active_view, f32 width){
     FColor margin_color = get_panel_margin_color(is_active_view?UIHighlight_Active:UIHighlight_None);
-    return(draw_background_and_margin(app, view, margin_color, fcolor_id(defcolor_back), width));
+    return(draw_background_and_margin(app, view, margin_color, {}, width));
 }
 
 function Rect_f32
 draw_background_and_margin(Application_Links *app, View_ID view, b32 is_active_view){
     FColor margin_color = get_panel_margin_color(is_active_view?UIHighlight_Active:UIHighlight_None);
-    return(draw_background_and_margin(app, view, margin_color, fcolor_id(defcolor_back), 3.f));
+    return(draw_background_and_margin(app, view, margin_color, {}, 3.f));
 }
 
 function Rect_f32
@@ -583,6 +583,8 @@ draw_whitespace_highlight(Application_Links *app, Text_Layout_ID text_layout_id,
     Range_i64 visible_range = text_layout_get_visible_range(app, text_layout_id);
     i64 first_index = token_index_from_pos(array, visible_range.first);
     Token_Iterator_Array it = token_iterator_index(0, array, first_index);
+    ARGB_Color color = fcolor_resolve(fcolor_id(defcolor_highlight_white));
+    
     for (;;){
         Token *token = token_it_read(&it);
         if (token->pos >= visible_range.one_past_last){
@@ -590,8 +592,20 @@ draw_whitespace_highlight(Application_Links *app, Text_Layout_ID text_layout_id,
         }
         if (token->kind == TokenBaseKind_Whitespace){
             Range_i64 range = Ii64(token);
-            draw_character_block(app, text_layout_id, range, roundness,
-                                 fcolor_id(defcolor_highlight_white));
+            // Iterate through each character in the whitespace token
+            for (i64 i = range.first; i < range.one_past_last; ++i){
+                Rect_f32 rect = text_layout_character_on_screen(app, text_layout_id, i);
+                
+                // Find the center of the character bounding box
+                f32 mid_x = (rect.x0 + rect.x1) * 0.5f;
+                f32 mid_y = (rect.y0 + rect.y1) * 0.5f;
+                
+                // Radius of the dot (adjust this value to make the dot larger or smaller)
+                f32 r = 3.f; 
+                Rect_f32 dot_rect = Rf32(mid_x - r, mid_y - r, mid_x + r, mid_y + r);
+                
+                draw_rectangle(app, dot_rect, roundness, color);
+            }
         }
         if (!token_it_inc_all(&it)){
             break;
@@ -602,23 +616,23 @@ draw_whitespace_highlight(Application_Links *app, Text_Layout_ID text_layout_id,
 function void
 draw_whitespace_highlight(Application_Links *app, Buffer_ID buffer, Text_Layout_ID text_layout_id, f32 roundness){
     Range_i64 visible_range = text_layout_get_visible_range(app, text_layout_id);
-    for (i64 i = visible_range.first; i < visible_range.one_past_last;){
+    ARGB_Color color = fcolor_resolve(fcolor_id(defcolor_highlight_white));
+    
+    // Grouping is removed since we draw individual dots instead of continuous blocks
+    for (i64 i = visible_range.first; i < visible_range.one_past_last; i += 1){
         u8 c = buffer_get_char(app, buffer, i);
         if (character_is_whitespace(c)){
-            i64 s = i;
-            i += 1;
-            for (; i < visible_range.one_past_last; i += 1){
-                c = buffer_get_char(app, buffer, i);
-                if (!character_is_whitespace(c)){
-                    break;
-                }
-            }
-            Range_i64 range = Ii64(s, i);
-            draw_character_block(app, text_layout_id, range, roundness,
-                                 fcolor_id(defcolor_highlight_white));
-        }
-        else{
-            i += 1;
+            Rect_f32 rect = text_layout_character_on_screen(app, text_layout_id, i);
+            
+            // Find the center of the character bounding box
+            f32 mid_x = (rect.x0 + rect.x1) * 0.5f;
+            f32 mid_y = (rect.y0 + rect.y1) * 0.5f;
+            
+            // Radius of the dot (adjust this value to make the dot larger or smaller)
+            f32 r = 3.f; 
+            Rect_f32 dot_rect = Rf32(mid_x - r, mid_y - r, mid_x + r, mid_y + r);
+            
+            draw_rectangle(app, dot_rect, roundness, color);
         }
     }
 }
@@ -693,7 +707,9 @@ draw_enclosures(Application_Links *app, Text_Layout_ID text_layout_id, Buffer_ID
                 ARGB_Color *fore_colors, i32 fore_count){
     Scratch_Block scratch(app);
     Range_i64_Array ranges = get_enclosure_ranges(app, scratch, buffer, pos, flags);
-    
+    // @NOTE(lake): Hard code back colors to zero so we
+    //              can keep the acrylic design.
+    back_colors = 0;
     i32 color_index = 0;
     for (i32 i = ranges.count - 1; i >= 0; i -= 1){
         Range_i64 range = ranges.ranges[i];
@@ -959,10 +975,10 @@ draw_button(Application_Links *app, Rect_f32 rect, Vec2_f32 mouse_p, Face_ID fac
         hovered = true;
     }
     
-    UI_Highlight_Level highlight = hovered?UIHighlight_Active:UIHighlight_None;
-    draw_rectangle_fcolor(app, rect, 3.f, get_item_margin_color(highlight));
+    //UI_Highlight_Level highlight = hovered?UIHighlight_Active:UIHighlight_None;
+    draw_rectangle_fcolor(app, rect, 3.f, {});
     rect = rect_inner(rect, 3.f);
-    draw_rectangle_fcolor(app, rect, 3.f, get_item_margin_color(highlight, 1));
+    draw_rectangle_fcolor(app, rect, 3.f, {});
     
     Scratch_Block scratch(app);
     Fancy_String *fancy = push_fancy_string(scratch, 0, face, fcolor_id(defcolor_text_default), text);

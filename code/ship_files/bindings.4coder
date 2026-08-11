@@ -14,6 +14,8 @@ keys_global = {
     { "save_all_dirty_buffers",        "S", "Control", "Shift" },
     { "change_to_build_panel",         "Period", "Alt" },
     { "close_build_panel",             "Comma", "Alt" },
+    { "close_panel",                   "C", "Alt"},
+    { "load_project",                  "P", "Alt"},
     { "goto_next_jump",                "N", "Alt" },
     { "goto_prev_jump",                "N", "Alt", "Shift" },
     { "build_in_build_panel",          "M", "Alt" },

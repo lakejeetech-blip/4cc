@@ -1506,6 +1506,79 @@ win32_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
 //-
 
+typedef enum _ACCENT_STATE {
+  ACCENT_DISABLED = 0,
+  ACCENT_ENABLE_GRADIENT = 1,
+  ACCENT_ENABLE_TRANSPARENTGRADIENT = 2,
+  ACCENT_ENABLE_BLURBEHIND = 3,
+  ACCENT_ENABLE_ACRYLICBLURBEHIND = 4,
+  ACCENT_INVALID_STATE = 5
+} ACCENT_STATE;
+
+typedef struct _ACCENT_POLICY {
+  ACCENT_STATE AccentState;
+  DWORD AccentFlags;
+  DWORD GradientColor;
+  DWORD AnimationId;
+} ACCENT_POLICY;
+
+typedef struct _WINDOWCOMPOSITIONATTRIBDATA {
+  DWORD Attribute;
+  PVOID pData;
+  DWORD DataSize;
+} WINDOWCOMPOSITIONATTRIBDATA;
+
+typedef BOOL(WINAPI* pfnSetWindowCompositionAttribute)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
+
+// This function exposes a clean, dependency-free window finder based on the window title
+// @TODO_LATER: This should either be a handle or id
+void
+ApplyAcrylicBlurToWindow() {
+  if (win32vars.window_handle) {
+    HMODULE h_user32 = GetModuleHandleW(L"user32.dll");
+    if (h_user32) {
+      pfnSetWindowCompositionAttribute SetWindowCompositionAttribute =
+        (pfnSetWindowCompositionAttribute)GetProcAddress(h_user32, "SetWindowCompositionAttribute");
+
+      if (SetWindowCompositionAttribute) {
+        // Determine Windows version
+        OSVERSIONINFOEXW os_info = {};
+        os_info.dwOSVersionInfoSize = sizeof(os_info);
+        typedef LONG(WINAPI* RtlGetVersionFn)(LPOSVERSIONINFOEXW);
+
+        RtlGetVersionFn pfnRtlGetVersion =
+          (RtlGetVersionFn)GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "RtlGetVersion");
+
+        bool is_win_11_or_newer = false;
+        if (pfnRtlGetVersion) {
+          pfnRtlGetVersion(&os_info);
+          if (os_info.dwMajorVersion >= 10 && os_info.dwBuildNumber >= 22000) {
+            is_win_11_or_newer = true;
+          }
+        }
+
+        ACCENT_POLICY policy = {};
+
+        // @NOTE @PERFORMANCE: Windows 10 dragging can stutter using full Acrylic via this hack,
+        //                     So we use standard background blur on Win10 and crisp Acrylic on Windows 11.
+        if (is_win_11_or_newer) {
+          policy.AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND;
+          policy.GradientColor = 0xB21A1A1A; // Sleek Dark Translucent Tint
+        } else {
+          policy.AccentState = ACCENT_ENABLE_BLURBEHIND; // Should be smoother on Windows 10
+          policy.GradientColor = 0xB21A1A1A; // Slightly higher alpha transparency looks cleaner here
+        }
+
+        WINDOWCOMPOSITIONATTRIBDATA data = {};
+        data.Attribute = 19; // WCA_ACCENT_POLICY
+        data.pData = &policy;
+        data.DataSize = sizeof(policy);
+
+        SetWindowCompositionAttribute(win32vars.window_handle, &data);
+      }
+    }
+  }
+}
 int CALL_CONVENTION
 WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow){
     i32 argc = __argc;
@@ -2044,6 +2117,8 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
         
         // NOTE(allen): update lctrl_lalt_is_altgr status
         win32vars.lctrl_lalt_is_altgr = (b8)result.lctrl_lalt_is_altgr;
+
+        ApplyAcrylicBlurToWindow();
         
         // NOTE(allen): render
 #if defined( WIN32_DX11 )

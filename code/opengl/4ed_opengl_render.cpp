@@ -276,7 +276,7 @@ gl_render(Render_Target *t){
     
     glViewport(0, 0, width, height);
     glScissor(0, 0, width, height);
-    glClearColor(1.f, 0.f, 1.f, 1.f);
+    glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT);
     
     glBindTexture(GL_TEXTURE_2D, 0);

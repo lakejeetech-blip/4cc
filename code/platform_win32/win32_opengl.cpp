@@ -186,13 +186,15 @@ win32_gl_create_window(HWND *wnd_out, HGLRC *context_out, DWORD style, RECT rect
             PIXELFORMATDESCRIPTOR format = {};
             
             i32 pixel_attrib_list[] = {
-                /* 0*/WGL_DRAW_TO_WINDOW_ARB, TRUE,
-                /* 2*/WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
-                /* 4*/WGL_SUPPORT_OPENGL_ARB, TRUE,
-                /* 6*/WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-                /* 8*/WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-                /*10*/WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB, GL_TRUE,
-                /*12*/0,
+                WGL_DRAW_TO_WINDOW_ARB, TRUE,
+                WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+                WGL_SUPPORT_OPENGL_ARB, TRUE,
+                WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+                WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+                WGL_COLOR_BITS_ARB, 32,            // <--- Add color depth
+                WGL_ALPHA_BITS_ARB, 8,             // <--- Add 8-bit alpha buffer
+                WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB, GL_TRUE,
+                0,
             };
             if (!srgb_support){
                 pixel_attrib_list[10] = 0;
