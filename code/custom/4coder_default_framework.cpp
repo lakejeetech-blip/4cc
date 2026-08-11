@@ -631,7 +631,7 @@ default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_nam
 "Use the key combination [ X Alt ] (on mac [ X Control ])\n" \
 "Type in 'hms_demo_tutorial' and press enter\n" \
 "\n" \
-"Lets go!\n"
+"Lets go!\n\n"
 
     print_message(app, string_u8_litexpr(M));
 #undef M
