@@ -1968,8 +1968,8 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
     window_rect.bottom = plat_settings.window_h;
   }
   else{
-    window_rect.right = 800;
-    window_rect.bottom = 600;
+    window_rect.right = 1920;
+    window_rect.bottom = 1080;
   }
   AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, false);
   i32 window_style = WS_OVERLAPPEDWINDOW;

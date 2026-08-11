@@ -606,17 +606,33 @@ setup_essential_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_i
 function void
 default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_names, i32 override_font_size, b32 override_hinting){
 #define M \
-"Welcome to " VERSION "\n" \
-"If you're new to 4coder there is a built in tutorial\n" \
+"######################################################################################################################\n" \
+"Still dreaming?...\n" \
+"\n" \
+"\n" \
+"            _.,,,.._\n" \
+"        ,d$$$$$$$$SIIi:.\n" \
+"       ,S$$$$$$$$$$SSIiIi:.     _______   ________   ______   _______   _______   ________   ______   ________ \n" \
+"      jI$$$$$$$$$$$SSIISSi:.   /       \\ /        | /      \\ /       \\ /       \\ /        | /      \\ /        |\n" \
+"    ,S$$$$$$$$$$$$SSIIS$Ii:    $$$$$$$  |$$$$$$$$/ /$$$$$$  |$$$$$$$  |$$$$$$$  |$$$$$$$$/ /$$$$$$  |$$$$$$$$/\n" \
+"    jº?$$$$$$$$$$$SSIISS$$Ii   $$ |  $$ |$$ |__    $$ |__$$ |$$ |  $$ |$$ |__$$ |$$ |__    $$ |__$$ |   $$ |\n" \
+"    :  ?$$$$$$$$$SS7IISS$$I:   $$ |  $$ |$$    |   $$    $$ |$$ |  $$ |$$    $$< $$    |   $$    $$ |   $$ |\n" \
+"    j_ /$$7`º4$$$S7:iIS$$$I'   $$ |  $$ |$$$$$/    $$$$$$$$ |$$ |  $$ |$$$$$$$  |$$$$$/    $$$$$$$$ |   $$ |\n" \
+"    º?\"?$$:    'k  :iIIS$$S7'  $$ |__$$ |$$ |____  $$ |  $$ |$$ |__$$ |$$ |__$$ |$$ |____  $$ |  $$ |   $$ |\n" \
+"    |  ?L,    ,d$ 'º'‾j$$7'    $$    $$/ $$      | $$ |  $$ |$$    $$/ $$    $$/ $$      | $$ |  $$ |   $$ |\n" \
+"    ,d._J$$$$S$$$L,_•'$$       $$$$$$$/  $$$$$$$$/ $$/   $$/ $$$$$$$/  $$$$$$$/  $$$$$$$$/ $$/   $$/    $$/\n" \
+"    \\:'ºººº^':jIS7\n" \
+"    j$k,i:/_,oSSI'\n" \
+"    ?SSS$$$$$?º'\n" \
+"    'ºººº\"'\n" \
+"######################################################################################################################\n" \
+"Welcome to DEADBEAT! My absolutely chopped implementation of 4Coder!\n" \
+"To access the tutorial\n" \
 "Use the key combination [ X Alt ] (on mac [ X Control ])\n" \
 "Type in 'hms_demo_tutorial' and press enter\n" \
 "\n" \
-"Direct bug reports and feature requests to https://github.com/4coder-editor/4coder/issues\n" \
-"\n" \
-"Other questions and discussion can be directed to editor@4coder.net or 4coder.handmade.network\n" \
-"\n" \
-"The change log can be found in CHANGES.txt\n" \
-"\n"
+"Lets go!\n"
+
     print_message(app, string_u8_litexpr(M));
 #undef M
     
