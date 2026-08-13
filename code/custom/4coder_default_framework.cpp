@@ -616,8 +616,8 @@ default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_nam
 "      jI$$$$$$$$$$$SSIISSi:.   /       \\ /        | /      \\ /       \\ /       \\ /        | /      \\ /        |\n" \
 "    ,S$$$$$$$$$$$$SSIIS$Ii:    $$$$$$$  |$$$$$$$$/ /$$$$$$  |$$$$$$$  |$$$$$$$  |$$$$$$$$/ /$$$$$$  |$$$$$$$$/\n" \
 "    jº?$$$$$$$$$$$SSIISS$$Ii   $$ |  $$ |$$ |__    $$ |__$$ |$$ |  $$ |$$ |__$$ |$$ |__    $$ |__$$ |   $$ |\n" \
-"    :  ?$$$$$$$$$SS7IISS$$I:   $$ |  $$ |$$    |   $$    $$ |$$ |  $$ |$$    $$< $$    |   $$    $$ |   $$ |\n" \
-"    j_ /$$7`º4$$$S7:iIS$$$I'   $$ |  $$ |$$$$$/    $$$$$$$$ |$$ |  $$ |$$$$$$$  |$$$$$/    $$$$$$$$ |   $$ |\n" \
+"    :  ?$$$$$$$$$SS7IISS$$I:   $$ |  $$ |$$   |    $$    $$ |$$ |  $$ |$$    $$ |$$   |    $$    $$ |   $$ |\n" \
+"    j_ /$$7`º4$$$S7:iIS$$$I'   $$ |  $$ |$$$$$/    $$$$$$$$ |$$ |  $$ |$$$$$$$< |$$$$$/    $$$$$$$$ |   $$ |\n" \
 "    º?\"?$$:    'k  :iIIS$$S7'  $$ |__$$ |$$ |____  $$ |  $$ |$$ |__$$ |$$ |__$$ |$$ |____  $$ |  $$ |   $$ |\n" \
 "    |  ?L,    ,d$ 'º'‾j$$7'    $$    $$/ $$      | $$ |  $$ |$$    $$/ $$    $$/ $$      | $$ |  $$ |   $$ |\n" \
 "    ,d._J$$$$S$$$L,_•'$$       $$$$$$$/  $$$$$$$$/ $$/   $$/ $$$$$$$/  $$$$$$$/  $$$$$$$$/ $$/   $$/    $$/\n" \
@@ -627,9 +627,9 @@ default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_nam
 "    'ºººº\"'\n" \
 "######################################################################################################################\n" \
 "Welcome to DEADBEAT! My absolutely chopped implementation of 4Coder!\n" \
-"To access the tutorial\n" \
-"Use the key combination [ X Alt ] (on mac [ X Control ])\n" \
-"Type in 'hms_demo_tutorial' and press enter\n" \
+"If you completely forget how to use this and/or are new to it, then do the following:\n" \
+"1. Use the key combination [ X Alt ] (on mac [ X Control ])\n" \
+"2. Type in 'hms_demo_tutorial' into the command panel and hit enter\n" \
 "\n" \
 "Lets go!\n\n"
 

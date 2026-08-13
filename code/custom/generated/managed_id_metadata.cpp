@@ -56,4 +56,10 @@ buffer_lex_task = managed_id_declare(app, string_u8_litexpr("attachment"), strin
 buffer_wrap_lines = managed_id_declare(app, string_u8_litexpr("attachment"), string_u8_litexpr("buffer_wrap_lines"));
 sticky_jump_marker_handle = managed_id_declare(app, string_u8_litexpr("attachment"), string_u8_litexpr("sticky_jump_marker_handle"));
 attachment_tokens = managed_id_declare(app, string_u8_litexpr("attachment"), string_u8_litexpr("attachment_tokens"));
+lake_color_index_type = managed_id_declare(app, string_u8_litexpr("colors"), string_u8_litexpr("lake_color_index_type"));
+lake_color_index_function = managed_id_declare(app, string_u8_litexpr("colors"), string_u8_litexpr("lake_color_index_function"));
+lake_color_index_macro = managed_id_declare(app, string_u8_litexpr("colors"), string_u8_litexpr("lake_color_index_macro"));
+lake_color_index_command = managed_id_declare(app, string_u8_litexpr("colors"), string_u8_litexpr("lake_color_index_command"));
+lake_color_index_namespace = managed_id_declare(app, string_u8_litexpr("colors"), string_u8_litexpr("lake_color_index_namespace"));
+lake_color_member_variable = managed_id_declare(app, string_u8_litexpr("colors"), string_u8_litexpr("lake_color_member_variable"));
 }

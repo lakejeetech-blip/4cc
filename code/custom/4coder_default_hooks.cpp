@@ -157,7 +157,8 @@ function void
 default_tick(Application_Links *app, Frame_Info frame_info){
     ////////////////////////////////
     // NOTE(allen): Update code index
-    
+    Scratch_Block scratch(app);
+
     code_index_update_tick(app);
     
     ////////////////////////////////
@@ -284,14 +285,15 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
     // NOTE(allen): Token colorizing
     Token_Array token_array = get_token_array_from_buffer(app, buffer);
     if (token_array.tokens != 0){
-        draw_cpp_token_colors(app, text_layout_id, &token_array);
-        
+        //draw_cpp_token_colors(app, text_layout_id, &token_array);
+        lake_draw_cpp_token_colors(app, text_layout_id, &token_array, buffer);
+
         // NOTE(allen): Scan for TODOs and NOTEs
         b32 use_comment_keyword = def_get_config_b32(vars_save_string_lit("use_comment_keyword"));
         if (use_comment_keyword){
             Comment_Highlight_Pair pairs[] = {
-                {string_u8_litexpr("NOTE"), finalize_color(defcolor_comment_pop, 0)},
-                {string_u8_litexpr("TODO"), finalize_color(defcolor_comment_pop, 1)},
+                {string_u8_litexpr("@NOTE"), finalize_color(defcolor_comment_pop, 0)},
+                {string_u8_litexpr("@TODO"), finalize_color(defcolor_comment_pop, 1)},
             };
             draw_comment_highlights(app, buffer, text_layout_id, &token_array, pairs, ArrayCount(pairs));
         }
