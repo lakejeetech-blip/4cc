@@ -237,6 +237,7 @@ build_language_model(void){
     sm_key("TypeID");
     sm_key("New");
     sm_key("Delete");
+    sm_key("Typedef", "using");
     
     sm_select_base_kind(TokenBaseKind_LiteralInteger);
     sm_key("LiteralTrue", "true");

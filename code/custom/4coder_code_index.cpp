@@ -360,6 +360,25 @@ index_new_note(index, state, Ii64(token), CodeIndexNote_Type, parent);
 }
 
 function void
+cpp_parse_using(Code_Index_File *index, Generic_Parse_State *state, Code_Index_Nest *parent){
+    generic_parse_inc(state);
+    generic_parse_skip_soft_tokens(index, state);
+    
+    Token *token = token_it_read(&state->it);
+    if (token != 0 && token->kind == TokenBaseKind_Identifier){
+        generic_parse_inc(state);
+        generic_parse_skip_soft_tokens(index, state);
+        
+        Token *peek = token_it_read(&state->it);
+        // Checks for a statement close (;) or assignment/init (=)
+        if (peek != 0 && (peek->kind == TokenBaseKind_StatementClose ||
+                          peek->sub_kind == TokenCppKind_Eq)){
+            index_new_note(index, state, Ii64(token), CodeIndexNote_Type, parent);
+        }
+    }
+}
+
+function void
 cpp_parse_type_def(Code_Index_File *index, Generic_Parse_State *state, Code_Index_Nest *parent){
 generic_parse_inc(state);
 generic_parse_skip_soft_tokens(index, state);
@@ -774,23 +793,24 @@ Code_Index_Nest *nest = generic_parse_paren(index, state);
 code_index_push_nest(&index->nest_list, nest);
 }
 else if (state->do_cpp_parse){
-if (token->sub_kind == TokenCppKind_Struct ||
-    token->sub_kind == TokenCppKind_Union ||
-    token->sub_kind == TokenCppKind_Enum){
-cpp_parse_type_structure(index, state, 0);
-}
-else if (token->sub_kind == TokenCppKind_Typedef){
-cpp_parse_type_def(index, state, 0);
-}
-else if (token->sub_kind == TokenCppKind_Identifier){
-cpp_parse_function(index, state, 0);
-}
-else{
-generic_parse_inc(state);
-}
-}
-else{
-generic_parse_inc(state);
+    if (token->sub_kind == TokenCppKind_Struct ||
+        token->sub_kind == TokenCppKind_Union ||
+        token->sub_kind == TokenCppKind_Enum){
+        cpp_parse_type_structure(index, state, 0);
+    }
+    else if (token->sub_kind == TokenCppKind_Typedef){
+        cpp_parse_type_def(index, state, 0);
+    }
+    else if (token->sub_kind == TokenCppKind_Using || 
+             (token->kind == TokenBaseKind_Keyword && string_match(string_substring(state->contents, Ii64(token)), string_u8_litexpr("using")))){
+        cpp_parse_using(index, state, 0);
+    }
+    else if (token->sub_kind == TokenCppKind_Identifier){
+        cpp_parse_function(index, state, 0);
+    }
+    else{
+        generic_parse_inc(state);
+    }
 }
 
 i64 index = token_it_index(&state->it);
