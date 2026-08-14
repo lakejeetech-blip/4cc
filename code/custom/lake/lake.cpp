@@ -1,48 +1,13 @@
 /*
  * lake.cpp
  * ------------------------------------------------------------------------
- * Entry point for the "lake" custom layer.
- *
- * This starts from 4coder's default custom layer (same shape as
- * 4coder_default_bindings.cpp in the 4cc source tree) and adds semantic
- * identifier coloring via lake_highlight.cpp.
- *
- * BUILD
- *   This file replaces 4coder_default_bindings.cpp as the thing you pass
- *   to the build script, e.g. (4coder-community/4cc build scripts):
- *
- *       ./build.sh --mode=release lake.cpp
- *       .\build.bat -m=release lake.cpp
- *
- *   The resulting shared library goes wherever your 4ed binary loads the
- *   custom layer from (same folder as the default one it replaces).
- *
- * FILES THIS EXPECTS NEXT TO IT
- *   - lake_highlight.cpp   (the semantic coloring module)
- *
- * ONE-TIME CORE EDIT (see lake_highlight.cpp's big comment for why this
- * has to live in the core source rather than purely in this file):
- *   In 4coder_default_hooks.cpp, inside default_render_buffer, swap the
- *   call to draw_cpp_token_colors(...) for lake_draw_cpp_token_colors(...).
- * ------------------------------------------------------------------------
  */
 
 #include "../4coder_default_include.cpp"
 
-// lake: semantic identifier coloring (types/functions/macros via the
-// built-in Code_Index). Must come after 4coder_default_include.cpp -- it
-// depends on core types that file pulls in.
+
 #include "lake_jelly_cursor.cpp"
 #include "lake_highlight.cpp"
-
-/*
- * If you want lake to eventually diverge further from the defaults --
- * custom bindings, extra languages, extra render hooks, whatever --
- * this is the natural place to start pulling in more modules the same
- * way 4coder_fleury does (see 4coder_fleury.cpp's big #include block for
- * the pattern: headers first, then .cpp's, then wire it all up in
- * custom_layer_init below).
- */
 
 /* Custom render hook that replaces default_render_buffer */
 function void
