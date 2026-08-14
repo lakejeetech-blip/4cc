@@ -32,6 +32,7 @@
 // lake: semantic identifier coloring (types/functions/macros via the
 // built-in Code_Index). Must come after 4coder_default_include.cpp -- it
 // depends on core types that file pulls in.
+#include "lake_jelly_cursor.cpp"
 #include "lake_highlight.cpp"
 
 /*
@@ -70,7 +71,7 @@ custom_layer_init(Application_Links *app)
     default_framework_init(app);
     set_all_default_hooks(app);
     lake_install_hooks(app);
-
+    set_custom_hook(app, HookID_Tick, lake_tick);
     mapping_init(tctx, &framework_mapping);
     String_ID global_map_id = vars_save_string_lit("keys_global");
     String_ID file_map_id = vars_save_string_lit("keys_file");

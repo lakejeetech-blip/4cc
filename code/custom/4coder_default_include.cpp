@@ -150,6 +150,9 @@ function void lake_draw_cpp_token_colors(Application_Links *app,
                                          Token_Array *array,
                                          Buffer_ID buffer);
 function b32  lake_process_buffer_includes(Application_Links *app, Arena *arena, Buffer_ID buffer);
+function void
+lake_draw_jelly_cursor(Application_Links *app, View_ID view, Buffer_ID buffer,
+  Text_Layout_ID text_layout_id, i64 cursor_pos, b32 is_active_view);
 function BUFFER_HOOK_SIG(lake_on_begin_buffer);
 function BUFFER_HOOK_SIG(lake_on_save_file);
 #include "4coder_default_hooks.cpp"

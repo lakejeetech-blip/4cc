@@ -1265,7 +1265,7 @@ ApplyAcrylicBlurToWindow() {
         // @NOTE @PERFORMANCE: Windows 10 dragging can stutter using full Acrylic via this hack,
         //                     So we use standard background blur on Win10 and crisp Acrylic on Windows 11.
         if (is_win_11_or_newer) {
-          policy.AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND;
+          policy.AccentState = ACCENT_ENABLE_BLURBEHIND;
           policy.GradientColor = 0xB21A1A1A; // Sleek Dark Translucent Tint
         } else {
           policy.AccentState = ACCENT_ENABLE_BLURBEHIND; // Should be smoother on Windows 10

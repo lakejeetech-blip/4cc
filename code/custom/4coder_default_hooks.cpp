@@ -385,12 +385,14 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
         case FCoderMode_Original:
         {
             draw_original_4coder_style_cursor_mark_highlight(app, view_id, is_active_view, buffer, text_layout_id, cursor_roundness, mark_thickness);
+            lake_draw_jelly_cursor(app, view_id, buffer, text_layout_id, cursor_pos, is_active_view);
         }break;
         case FCoderMode_NotepadLike:
         {
             draw_notepad_style_cursor_highlight(app, view_id, buffer, text_layout_id, cursor_roundness);
         }break;
     }
+
     
     // NOTE(allen): Fade ranges
     paint_fade_ranges(app, text_layout_id, buffer);
