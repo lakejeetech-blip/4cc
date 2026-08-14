@@ -11,7 +11,7 @@ CUSTOM_ID(colors, lake_color_jelly_cursor);
 #define LAKE_TRAIL_COUNT 3  // Reduced trail length for a tighter, faster feel
 
 // Motion tuning: Extreme stiffness for instant snap and minimal lag
-global f32 lake_jelly_stiffness    = 1000.0f;  // Increased heavily for instant catch-up
+global f32 lake_jelly_stiffness    = 1500.0f;  // Increased heavily for instant catch-up
 global f32 lake_jelly_damping      = 90.0f;    // Balanced higher damping to prevent wild shaking
 global f32 lake_jelly_max_stretch  = 60.0f;    
 global f32 lake_jelly_roundness    = 4.0f;    
