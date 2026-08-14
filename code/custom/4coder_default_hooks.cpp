@@ -376,7 +376,7 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
             draw_whitespace_highlight(app, buffer, text_layout_id, cursor_roundness);
         }
         else{
-            draw_whitespace_highlight(app, text_layout_id, &token_array, cursor_roundness);
+            draw_whitespace_highlight(app, buffer, text_layout_id, &token_array, cursor_roundness);
         }
     }
     

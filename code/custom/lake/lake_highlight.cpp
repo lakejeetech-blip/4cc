@@ -1,9 +1,16 @@
-CUSTOM_ID(colors, lake_color_index_type);
-CUSTOM_ID(colors, lake_color_index_function);
-CUSTOM_ID(colors, lake_color_index_macro);
-CUSTOM_ID(colors, lake_color_index_command);
-CUSTOM_ID(colors, lake_color_index_namespace);
-CUSTOM_ID(colors, lake_color_member_variable);
+//CUSTOM_ID(colors, lake_color_index_type);
+//CUSTOM_ID(colors, lake_color_index_function);
+//CUSTOM_ID(colors, lake_color_index_macro);
+//CUSTOM_ID(colors, lake_color_index_command);
+//CUSTOM_ID(colors, lake_color_index_namespace);
+//CUSTOM_ID(colors, lake_color_member_variable);
+
+#define LAKE_COLOR_INDEX_TYPE      0xFFA0D9AC
+#define LAKE_COLOR_INDEX_FUNCTION  0xFF598061
+#define LAKE_COLOR_INDEX_MACRO     0xFFF7A6C9
+#define LAKE_COLOR_INDEX_COMMAND   0xFFF7A6C9
+#define LAKE_COLOR_INDEX_NAMESPACE 0xFF67CC8E
+#define LAKE_COLOR_MEMBER_VARIABLE 0xFF88CA8A
 
 typedef struct Lake_Hashes_Notes
 {
@@ -33,7 +40,7 @@ global Arena global_ns_arena = {0};
 
 // Namespace scanning needs actual tokens to exist, and tokenization is NOT
 // guaranteed complete by the time HookID_BeginBuffer/HookID_SaveFile fire
-// -- confirmed by [Lake NS] logging showing "(0 tokens)" for a freshly
+// -- confirmed by [ Lake Highlight ] logging showing "(0 tokens)" for a freshly
 // opened, clearly non-empty file. Code_Index-based coloring (types/
 // functions/macros) doesn't hit this because it's consulted at RENDER
 // time, well after tokenization finishes. So: begin_buffer/save_file just
@@ -134,7 +141,7 @@ lake_update_namespace_cache(Application_Links *app)
         linalloc_clear(&global_ns_arena);
     }
 
-    print_message(app, string_u8_litexpr("[Lake NS] rebuilding namespace cache...\n"));
+    print_message(app, string_u8_litexpr("[ Lake Highlight ] rebuilding namespace cache...\n"));
     global_ns_store = lake_gather_namespaces_and_members(app, &global_ns_arena);
 }
 
@@ -297,7 +304,7 @@ lake_gather_namespaces_and_members(Application_Links *app, Arena *arena)
 
         {
             String_Const_u8 msg = push_u8_stringf(arena,
-                "[Lake NS] scanning buffer '%.*s' (%lld tokens)\n",
+                "[ Lake Highlight ] scanning buffer '%.*s' (%lld tokens)\n",
                 string_expand(buf_name), (long long)tokens.count);
             print_message(app, msg);
         }
@@ -345,7 +352,7 @@ lake_gather_namespaces_and_members(Application_Links *app, Arena *arena)
 
                                     Temp_Memory log_temp = begin_temp(arena);
                                     String_Const_u8 msg = push_u8_stringf(arena,
-                                        "[Lake NS] found namespace '%.*s'\n",
+                                        "[ Lake Highlight ] found namespace '%.*s'\n",
                                         string_expand(ns_name));
                                     print_message(app, msg);
                                     end_temp(log_temp);
@@ -397,7 +404,7 @@ lake_gather_namespaces_and_members(Application_Links *app, Arena *arena)
 
                                                         Temp_Memory log_temp = begin_temp(arena);
                                                         String_Const_u8 msg = push_u8_stringf(arena,
-                                                            "[Lake NS]   member '%.*s::%.*s'\n",
+                                                            "[ Lake Highlight ]   member '%.*s::%.*s'\n",
                                                             string_expand(ns_name), string_expand(member_name));
                                                         print_message(app, msg);
                                                         end_temp(log_temp);
@@ -421,7 +428,7 @@ lake_gather_namespaces_and_members(Application_Links *app, Arena *arena)
     {
         Temp_Memory log_temp = begin_temp(arena);
         String_Const_u8 msg = push_u8_stringf(arena,
-            "[Lake NS] scan complete: %d buffer(s), %d namespace(s), %d member(s)\n",
+            "[ Lake Highlight ] scan complete: %d buffer(s), %d namespace(s), %d member(s)\n",
             buffers_scanned, result.namespace_count, result.member_count);
         print_message(app, msg);
         end_temp(log_temp);
@@ -853,11 +860,11 @@ lake_draw_cpp_token_colors(Application_Links *app, Text_Layout_ID text_layout_id
                 Code_Index_Note *note = lake_get_note(app, &hashes_notes, lexeme);
                 if ((note && note->note_kind == CodeIndexNote_Function) || is_func_call)
                 {
-                    color = fcolor_id(lake_color_index_function); // Pink / Function
+                    color = fcolor_argb(LAKE_COLOR_INDEX_FUNCTION); // Pink / Function
                 }
                 else
                 {
-                    color = fcolor_id(lake_color_member_variable); // Tan / Member variable
+                    color = fcolor_argb(LAKE_COLOR_MEMBER_VARIABLE); // Tan / Member variable
                 }
             }
             else if (next_is_scope)
@@ -865,14 +872,14 @@ lake_draw_cpp_token_colors(Application_Links *app, Text_Layout_ID text_layout_id
                 // LHS of :: (e.g. AppState in AppState::something)
                 if (lake_is_known_namespace(ns_store, lexeme))
                 {
-                    color = fcolor_id(lake_color_index_namespace); // Red
+                    color = fcolor_argb(LAKE_COLOR_INDEX_NAMESPACE); // Red
                 }
                 else
                 {
                     Code_Index_Note *note = lake_get_note(app, &hashes_notes, lexeme);
                     if (note && note->note_kind == CodeIndexNote_Type)
                     {
-                        color = fcolor_id(lake_color_index_type); // Green for types
+                        color = fcolor_argb(LAKE_COLOR_INDEX_TYPE); // Green for types
                     }
                 }
             }
@@ -896,29 +903,29 @@ lake_draw_cpp_token_colors(Application_Links *app, Text_Layout_ID text_layout_id
                 {
                     switch (note->note_kind)
                     {
-                        case CodeIndexNote_Type:          color = fcolor_id(lake_color_index_type); break;
-                        case CodeIndexNote_Function:      color = fcolor_id(lake_color_index_function); break;
-                        case CodeIndexNote_Macro:         color = fcolor_id(lake_color_index_macro); break;
-                        case CodeIndexNote_4coderCommand: color = fcolor_id(lake_color_index_command); break;
+                        case CodeIndexNote_Type:          color = fcolor_argb(LAKE_COLOR_INDEX_TYPE); break;
+                        case CodeIndexNote_Function:      color = fcolor_argb(LAKE_COLOR_INDEX_FUNCTION); break;
+                        case CodeIndexNote_Macro:         color = fcolor_argb(LAKE_COLOR_INDEX_MACRO); break;
+                        case CodeIndexNote_4coderCommand: color = fcolor_argb(LAKE_COLOR_INDEX_COMMAND); break;
                     }
                 }
                 else if (lake_is_builtin_or_stl_type(lexeme))
                 {
-                    color = fcolor_id(lake_color_index_type);
+                    color = fcolor_argb(LAKE_COLOR_INDEX_TYPE);
                 }
                 else if (lake_is_builtin_c_function(lexeme) || is_func_call)
                 {
-                    color = fcolor_id(lake_color_index_function); // Pink
+                    color = fcolor_argb(LAKE_COLOR_INDEX_FUNCTION); // Pink
                 }
                 else if (lake_is_known_namespace_member(ns_store, lhs_lexeme, lexeme))
                 {
                     if (is_func_call)
                     {
-                        color = fcolor_id(lake_color_index_function); // Pink
+                        color = fcolor_argb(LAKE_COLOR_INDEX_FUNCTION); // Pink
                     }
                     else
                     {
-                        color = fcolor_id(lake_color_member_variable); // Tan / Member variable
+                        color = fcolor_argb(LAKE_COLOR_MEMBER_VARIABLE); // Tan / Member variable
                     }
                 }
             }
@@ -930,19 +937,19 @@ lake_draw_cpp_token_colors(Application_Links *app, Text_Layout_ID text_layout_id
                 {
                     switch (note->note_kind)
                     {
-                        case CodeIndexNote_Type:          color = fcolor_id(lake_color_index_type); break;
-                        case CodeIndexNote_Function:      color = fcolor_id(lake_color_index_function); break;
-                        case CodeIndexNote_Macro:         color = fcolor_id(lake_color_index_macro); break;
-                        case CodeIndexNote_4coderCommand: color = fcolor_id(lake_color_index_command); break;
+                        case CodeIndexNote_Type:          color = fcolor_argb(LAKE_COLOR_INDEX_TYPE); break;
+                        case CodeIndexNote_Function:      color = fcolor_argb(LAKE_COLOR_INDEX_FUNCTION); break;
+                        case CodeIndexNote_Macro:         color = fcolor_argb(LAKE_COLOR_INDEX_MACRO); break;
+                        case CodeIndexNote_4coderCommand: color = fcolor_argb(LAKE_COLOR_INDEX_COMMAND); break;
                     }
                 }
                 else if (lake_is_builtin_or_stl_type(lexeme))
                 {
-                    color = fcolor_id(lake_color_index_type);
+                    color = fcolor_argb(LAKE_COLOR_INDEX_TYPE);
                 }
                 else if (lake_is_builtin_c_function(lexeme) || is_func_call)
                 {
-                    color = fcolor_id(lake_color_index_function);
+                    color = fcolor_argb(LAKE_COLOR_INDEX_FUNCTION);
                 }
             }
 
@@ -1025,7 +1032,7 @@ function BUFFER_HOOK_SIG(lake_on_begin_buffer)
     // that's what was scanning with 0 tokens. Tokenization isn't done yet
     // at begin_buffer time. Just flag dirty; lake_draw_cpp_token_colors
     // picks this up on the next render, once tokens actually exist.
-    print_message(app, string_u8_litexpr("[Lake NS] begin_buffer: flagged dirty (rebuild deferred to render)\n"));
+    print_message(app, string_u8_litexpr("[ Lake Highlight ] begin_buffer: flagged dirty (rebuild deferred to render)\n"));
     global_ns_cache_dirty = true;
 
     return 0;
@@ -1040,7 +1047,7 @@ function BUFFER_HOOK_SIG(lake_on_save_file)
 
     lake_queue_push(buffer_id);
     lake_drain_include_queue(app, scratch);
-    print_message(app, string_u8_litexpr("[Lake NS] save_file: flagged dirty (rebuild deferred to render)\n"));
+    print_message(app, string_u8_litexpr("[ Lake Highlight ] save_file: flagged dirty (rebuild deferred to render)\n"));
     global_ns_cache_dirty = true;
 
     return 0;

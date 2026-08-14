@@ -579,34 +579,44 @@ draw_cpp_token_colors(Application_Links *app, Text_Layout_ID text_layout_id, Tok
 }
 
 function void
-draw_whitespace_highlight(Application_Links *app, Text_Layout_ID text_layout_id, Token_Array *array, f32 roundness){
+draw_whitespace_highlight(Application_Links *app, Buffer_ID buffer, Text_Layout_ID text_layout_id, Token_Array *array, f32 roundness){
     Range_i64 visible_range = text_layout_get_visible_range(app, text_layout_id);
     i64 first_index = token_index_from_pos(array, visible_range.first);
     Token_Iterator_Array it = token_iterator_index(0, array, first_index);
     ARGB_Color color = fcolor_resolve(fcolor_id(defcolor_highlight_white));
     
-    for (;;){
+    for (i64 i = visible_range.first; i < visible_range.one_past_last; i += 1){
         Token *token = token_it_read(&it);
         if (token->pos >= visible_range.one_past_last){
             break;
         }
+        
         if (token->kind == TokenBaseKind_Whitespace){
             Range_i64 range = Ii64(token);
-            // Iterate through each character in the whitespace token
-            for (i64 i = range.first; i < range.one_past_last; ++i){
-                Rect_f32 rect = text_layout_character_on_screen(app, text_layout_id, i);
+            for (i64 j = range.first; j < range.one_past_last; ++j){
+                // Ensure index is within buffer bounds to prevent out-of-bounds reads
+                if (j >= buffer_get_size(app, buffer)) {
+                    continue;
+                }
                 
-                // Find the center of the character bounding box
+                u8 c = buffer_get_char(app, buffer, j);
+                
+                if (c == '\n' || c == '\r'){
+                    continue;
+                }
+                
+                Rect_f32 rect = text_layout_character_on_screen(app, text_layout_id, j);
+                
                 f32 mid_x = (rect.x0 + rect.x1) * 0.5f;
                 f32 mid_y = (rect.y0 + rect.y1) * 0.5f;
                 
-                // Radius of the dot (adjust this value to make the dot larger or smaller)
                 f32 r = 3.f; 
                 Rect_f32 dot_rect = Rf32(mid_x - r, mid_y - r, mid_x + r, mid_y + r);
                 
                 draw_rectangle(app, dot_rect, roundness, color);
             }
         }
+        
         if (!token_it_inc_all(&it)){
             break;
         }
@@ -614,21 +624,25 @@ draw_whitespace_highlight(Application_Links *app, Text_Layout_ID text_layout_id,
 }
 
 function void
-draw_whitespace_highlight(Application_Links *app, Buffer_ID buffer, Text_Layout_ID text_layout_id, f32 roundness){
+draw_whitespace_highlight(Application_Links *app, Buffer_ID buffer,Text_Layout_ID text_layout_id, f32 roundness){
     Range_i64 visible_range = text_layout_get_visible_range(app, text_layout_id);
     ARGB_Color color = fcolor_resolve(fcolor_id(defcolor_highlight_white));
+    i64 buffer_size = buffer_get_size(app, buffer);
     
-    // Grouping is removed since we draw individual dots instead of continuous blocks
     for (i64 i = visible_range.first; i < visible_range.one_past_last; i += 1){
+        // Do not query past the actual buffer size (ignores virtual whitespace areas)
+        if (i >= buffer_size) {
+            break;
+        }
+        
         u8 c = buffer_get_char(app, buffer, i);
-        if (character_is_whitespace(c)){
+        
+        if (character_is_whitespace(c) && c != '\n' && c != '\r'){
             Rect_f32 rect = text_layout_character_on_screen(app, text_layout_id, i);
             
-            // Find the center of the character bounding box
             f32 mid_x = (rect.x0 + rect.x1) * 0.5f;
             f32 mid_y = (rect.y0 + rect.y1) * 0.5f;
             
-            // Radius of the dot (adjust this value to make the dot larger or smaller)
             f32 r = 3.f; 
             Rect_f32 dot_rect = Rf32(mid_x - r, mid_y - r, mid_x + r, mid_y + r);
             
