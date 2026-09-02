@@ -4540,11 +4540,21 @@ string_front_folder_of_path(String_Const_u8 str){
 
 function String_Const_char
 string_file_extension(String_Const_char string){
-    return(string_skip(string, string_find_last(string, '.') + 1));
+    i64 last_dot = string_find_last(string, '.');
+    if (last_dot < 0 || last_dot >= (i64)string.size) {
+        // Return an empty string if no extension/period is found
+        return {}; 
+    }
+    return(string_skip(string, last_dot + 1));
 }
 function String_Const_u8
 string_file_extension(String_Const_u8 string){
-    return(string_skip(string, string_find_last(string, '.') + 1));
+        i64 last_dot = string_find_last(string, '.');
+    if (last_dot < 0 || last_dot >= (i64)string.size) {
+        // Return an empty string if no extension/period is found
+        return {}; 
+    }
+    return(string_skip(string, last_dot + 1));
 }
 function String_Const_u16
 string_file_extension(String_Const_u16 string){

@@ -17,10 +17,6 @@ lake_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
 {
     ProfileScope(app, "lake render buffer");
 
-    // 1. Draw buffer background and line highlights
-    //draw_buffer_range_background(app, view_id, text_layout_id);
-
-    // 2. Render tokens using custom semantic coloring
     Token_Array token_array = get_token_array_from_buffer(app, buffer);
     if (token_array.tokens != 0)
     {

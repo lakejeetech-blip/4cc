@@ -40,7 +40,7 @@ global Arena global_ns_arena = {0};
 
 // Namespace scanning needs actual tokens to exist, and tokenization is NOT
 // guaranteed complete by the time HookID_BeginBuffer/HookID_SaveFile fire
-// -- confirmed by [ Lake Highlight ] logging showing "(0 tokens)" for a freshly
+// -- confirmed by [ Lake ] logging showing "(0 tokens)" for a freshly
 // opened, clearly non-empty file. Code_Index-based coloring (types/
 // functions/macros) doesn't hit this because it's consulted at RENDER
 // time, well after tokenization finishes. So: begin_buffer/save_file just
@@ -141,7 +141,7 @@ lake_update_namespace_cache(Application_Links *app)
         linalloc_clear(&global_ns_arena);
     }
 
-    print_message(app, string_u8_litexpr("[ Lake Highlight ] rebuilding namespace cache...\n"));
+    print_message(app, string_u8_litexpr("[ Lake ] rebuilding namespace cache...\n"));
     global_ns_store = lake_gather_namespaces_and_members(app, &global_ns_arena);
 }
 
@@ -204,59 +204,59 @@ lake_is_scope_operator(Application_Links *app, Arena *arena, Buffer_ID buffer, T
     return false;
 }
 
-function b32
-lake_is_builtin_or_stl_type(String_Const_u8 name)
-{
-    global String_Const_u8 stl_types[] = {
-        string_u8_litexpr("vector"),
-        string_u8_litexpr("string"),
-        string_u8_litexpr("string_view"),
-        string_u8_litexpr("map"),
-        string_u8_litexpr("unordered_map"),
-        string_u8_litexpr("set"),
-        string_u8_litexpr("unique_ptr"),
-        string_u8_litexpr("shared_ptr"),
-        string_u8_litexpr("size_t"),
-        string_u8_litexpr("int8_t"),   string_u8_litexpr("uint8_t"),
-        string_u8_litexpr("int16_t"),  string_u8_litexpr("uint16_t"),
-        string_u8_litexpr("int32_t"),  string_u8_litexpr("uint32_t"),
-        string_u8_litexpr("int64_t"),  string_u8_litexpr("uint64_t"),
-        string_u8_litexpr("uintptr_t"),string_u8_litexpr("intptr_t"),
-    };
+//function b32
+//lake_is_builtin_or_stl_type(String_Const_u8 name)
+//{
+//    global String_Const_u8 stl_types[] = {
+//        string_u8_litexpr("vector"),
+//        string_u8_litexpr("string"),
+//        string_u8_litexpr("string_view"),
+//        string_u8_litexpr("map"),
+//        string_u8_litexpr("unordered_map"),
+//        string_u8_litexpr("set"),
+//        string_u8_litexpr("unique_ptr"),
+//        string_u8_litexpr("shared_ptr"),
+//        string_u8_litexpr("size_t"),
+//        string_u8_litexpr("int8_t"),   string_u8_litexpr("uint8_t"),
+//        string_u8_litexpr("int16_t"),  string_u8_litexpr("uint16_t"),
+//        string_u8_litexpr("int32_t"),  string_u8_litexpr("uint32_t"),
+//        string_u8_litexpr("int64_t"),  string_u8_litexpr("uint64_t"),
+//        string_u8_litexpr("uintptr_t"),string_u8_litexpr("intptr_t"),
+//    };
 
-    for (i32 i = 0; i < ArrayCount(stl_types); i += 1)
-    {
-        if (string_match(name, stl_types[i]))
-        {
-            return true;
-        }
-    }
-    return false;
-}
+//    for (i32 i = 0; i < ArrayCount(stl_types); i += 1)
+//    {
+//        if (string_match(name, stl_types[i]))
+//        {
+//            return true;
+//        }
+//    }
+//    return false;
+//}
 
-function b32
-lake_is_builtin_c_function(String_Const_u8 name)
-{
-    global String_Const_u8 c_functions[] = {
-        string_u8_litexpr("printf"),  string_u8_litexpr("fprintf"),
-        string_u8_litexpr("sprintf"), string_u8_litexpr("snprintf"),
-        string_u8_litexpr("scanf"),   string_u8_litexpr("sscanf"),
-        string_u8_litexpr("malloc"),  string_u8_litexpr("calloc"),
-        string_u8_litexpr("realloc"), string_u8_litexpr("free"),
-        string_u8_litexpr("memcpy"),  string_u8_litexpr("memset"),
-        string_u8_litexpr("memmove"), string_u8_litexpr("strlen"),
-        string_u8_litexpr("strcmp"),  string_u8_litexpr("strncmp"),
-    };
+//function b32
+//lake_is_builtin_c_function(String_Const_u8 name)
+//{
+//    global String_Const_u8 c_functions[] = {
+//        string_u8_litexpr("printf"),  string_u8_litexpr("fprintf"),
+//        string_u8_litexpr("sprintf"), string_u8_litexpr("snprintf"),
+//        string_u8_litexpr("scanf"),   string_u8_litexpr("sscanf"),
+//        string_u8_litexpr("malloc"),  string_u8_litexpr("calloc"),
+//        string_u8_litexpr("realloc"), string_u8_litexpr("free"),
+//        string_u8_litexpr("memcpy"),  string_u8_litexpr("memset"),
+//        string_u8_litexpr("memmove"), string_u8_litexpr("strlen"),
+//        string_u8_litexpr("strcmp"),  string_u8_litexpr("strncmp"),
+//    };
 
-    for (i32 i = 0; i < ArrayCount(c_functions); i += 1)
-    {
-        if (string_match(name, c_functions[i]))
-        {
-            return true;
-        }
-    }
-    return false;
-}
+//    for (i32 i = 0; i < ArrayCount(c_functions); i += 1)
+//    {
+//        if (string_match(name, c_functions[i]))
+//        {
+//            return true;
+//        }
+//    }
+//    return false;
+//}
 
 /* Scans loaded buffers to collect namespaces and their declared members.
  * Unchanged from before -- this walks ALREADY-open buffers and doesn't
@@ -287,10 +287,9 @@ lake_gather_namespaces_and_members(Application_Links *app, Arena *arena)
     Buffer_ID buffer_it = get_buffer_next(app, 0, Access_Always);
     while (buffer_it != 0 && result.namespace_count < max_namespaces)
     {
-        Token_Array tokens = get_token_array_from_buffer(app, buffer_it);
-
-        Temp_Memory name_temp = begin_temp(arena);
-        String_Const_u8 buf_name = push_buffer_file_name(app, arena, buffer_it);
+      String_Const_u8 buf_name = push_buffer_file_name(app, arena, buffer_it);
+      Temp_Memory name_temp = begin_temp(arena);
+      Token_Array tokens = get_token_array_from_buffer(app, buffer_it);
 
         if (buf_name.size == 0)
         {
@@ -304,7 +303,7 @@ lake_gather_namespaces_and_members(Application_Links *app, Arena *arena)
 
         {
             String_Const_u8 msg = push_u8_stringf(arena,
-                "[ Lake Highlight ] scanning buffer '%.*s' (%lld tokens)\n",
+                "[ Lake ] scanning buffer '%.*s' (%lld tokens)\n",
                 string_expand(buf_name), (long long)tokens.count);
             print_message(app, msg);
         }
@@ -352,7 +351,7 @@ lake_gather_namespaces_and_members(Application_Links *app, Arena *arena)
 
                                     Temp_Memory log_temp = begin_temp(arena);
                                     String_Const_u8 msg = push_u8_stringf(arena,
-                                        "[ Lake Highlight ] found namespace '%.*s'\n",
+                                        "[ Lake ] found namespace '%.*s'\n",
                                         string_expand(ns_name));
                                     print_message(app, msg);
                                     end_temp(log_temp);
@@ -404,7 +403,7 @@ lake_gather_namespaces_and_members(Application_Links *app, Arena *arena)
 
                                                         Temp_Memory log_temp = begin_temp(arena);
                                                         String_Const_u8 msg = push_u8_stringf(arena,
-                                                            "[ Lake Highlight ]   member '%.*s::%.*s'\n",
+                                                            "[ Lake ]   member '%.*s::%.*s'\n",
                                                             string_expand(ns_name), string_expand(member_name));
                                                         print_message(app, msg);
                                                         end_temp(log_temp);
@@ -428,7 +427,7 @@ lake_gather_namespaces_and_members(Application_Links *app, Arena *arena)
     {
         Temp_Memory log_temp = begin_temp(arena);
         String_Const_u8 msg = push_u8_stringf(arena,
-            "[ Lake Highlight ] scan complete: %d buffer(s), %d namespace(s), %d member(s)\n",
+            "[ Lake ] scan complete: %d buffer(s), %d namespace(s), %d member(s)\n",
             buffers_scanned, result.namespace_count, result.member_count);
         print_message(app, msg);
         end_temp(log_temp);
@@ -909,14 +908,6 @@ lake_draw_cpp_token_colors(Application_Links *app, Text_Layout_ID text_layout_id
                         case CodeIndexNote_4coderCommand: color = fcolor_argb(LAKE_COLOR_INDEX_COMMAND); break;
                     }
                 }
-                else if (lake_is_builtin_or_stl_type(lexeme))
-                {
-                    color = fcolor_argb(LAKE_COLOR_INDEX_TYPE);
-                }
-                else if (lake_is_builtin_c_function(lexeme) || is_func_call)
-                {
-                    color = fcolor_argb(LAKE_COLOR_INDEX_FUNCTION); // Pink
-                }
                 else if (lake_is_known_namespace_member(ns_store, lhs_lexeme, lexeme))
                 {
                     if (is_func_call)
@@ -942,14 +933,6 @@ lake_draw_cpp_token_colors(Application_Links *app, Text_Layout_ID text_layout_id
                         case CodeIndexNote_Macro:         color = fcolor_argb(LAKE_COLOR_INDEX_MACRO); break;
                         case CodeIndexNote_4coderCommand: color = fcolor_argb(LAKE_COLOR_INDEX_COMMAND); break;
                     }
-                }
-                else if (lake_is_builtin_or_stl_type(lexeme))
-                {
-                    color = fcolor_argb(LAKE_COLOR_INDEX_TYPE);
-                }
-                else if (lake_is_builtin_c_function(lexeme) || is_func_call)
-                {
-                    color = fcolor_argb(LAKE_COLOR_INDEX_FUNCTION);
                 }
             }
 
@@ -1013,8 +996,393 @@ CUSTOM_DOC("Jumps to the definition of the symbol under the cursor using the cod
     }
 }
 
+CUSTOM_COMMAND_SIG(lake_reload_if_unloaded_changes)
+CUSTOM_DOC("Reloads the current buffer from disk if it contains unloaded external changes.")
+{
+    View_ID view = get_active_view(app, Access_Always);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
+    
+    if (buffer == 0) return;
+
+    Scratch_Block scratch(app);
+
+    // Retrieve the buffer's dirty / modification state flags
+    Dirty_State dirty_state = buffer_get_dirty_state(app, buffer);
+
+    if (HasFlag(dirty_state, DirtyState_UnloadedChanges))
+    {
+        // Reopen the buffer using the correct 3-argument signature (passing 0 for default flags)
+        Buffer_Reopen_Result result = buffer_reopen(app, buffer, 0);
+        
+        if (result != 0)
+        {
+            String_Const_u8 msg = push_u8_stringf(scratch, "[Lake] Successfully reloaded buffer with external changes.\n");
+            print_message(app, msg);
+        }
+        else
+        {
+            String_Const_u8 msg = push_u8_stringf(scratch, "[Lake] Failed to reload buffer from disk.\n");
+            print_message(app, msg);
+        }
+    }
+    else
+    {
+        String_Const_u8 msg = push_u8_stringf(scratch, "[Lake] No unloaded changes detected for this buffer.\n");
+        print_message(app, msg);
+    }
+}
+
+CUSTOM_COMMAND_SIG(lake_reload_all_unloaded_changes)
+CUSTOM_DOC("Iterates through all open buffers and reloads any that contain unloaded external changes.")
+{
+    Scratch_Block scratch(app);
+    int reloaded_count = 0;
+
+    // Iterate through all buffers using 4coder's buffer traversal API
+    for (Buffer_ID buffer = get_buffer_next(app, 0, Access_Always); buffer != 0; buffer = get_buffer_next(app, buffer, Access_Always))
+    {
+        // Retrieve dirty/modification flags for the current buffer
+        Dirty_State dirty_state = buffer_get_dirty_state(app, buffer);
+
+        if (HasFlag(dirty_state, DirtyState_UnloadedChanges))
+        {
+            // Reopen the buffer from disk
+            Buffer_Reopen_Result result = buffer_reopen(app, buffer, 0);
+            
+            if (result != 0)
+            {
+                reloaded_count += 1;
+            }
+        }
+    }
+
+    // Print a summary message to the 4coder message buffer
+    String_Const_u8 msg = push_u8_stringf(scratch, "[Lake] Successfully reloaded %d buffer(s) with unloaded external changes.\n", reloaded_count);
+    print_message(app, msg);
+}
+CUSTOM_COMMAND_SIG(lake_log_current_directory)
+CUSTOM_DOC("Logs all files and directories in the current buffer's directory.")
+{
+    Scratch_Block scratch(app);
+
+    View_ID view = get_active_view(app, Access_Always);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
+
+    String_Const_u8 file_name =
+        push_buffer_file_name(app, scratch, buffer);
+
+    if (file_name.size == 0)
+    {
+        print_message(
+            app,
+            string_u8_litexpr(
+                "[Lake] Error: Could not determine current file path.\n"
+            )
+        );
+        return;
+    }
+
+    String_Const_u8 directory =
+        string_remove_last_folder(file_name);
+
+    print_message(
+        app,
+        push_u8_stringf(
+            scratch,
+            "[Lake] Directory: %.*s\n",
+            string_expand(directory)
+        )
+    );
+
+    File_List file_list =
+        system_get_file_list(scratch, directory);
+
+    print_message(
+        app,
+        push_u8_stringf(
+            scratch,
+            "[Lake] Found %d entries:\n",
+            file_list.count
+        )
+    );
+
+    for (File_Info **node = file_list.infos;
+         node < file_list.infos + file_list.count;
+         ++node)
+    {
+        File_Info *info = *node;
+
+        b32 is_directory =
+            ((info->attributes.flags & FileAttribute_IsDirectory) != 0);
+
+        if (is_directory)
+        {
+            print_message(
+                app,
+                push_u8_stringf(
+                    scratch,
+                    "  [DIR ] %.*s\n",
+                    string_expand(info->file_name)
+                )
+            );
+        }
+        else
+        {
+            print_message(
+                app,
+                push_u8_stringf(
+                    scratch,
+                    "  [FILE] %.*s\n",
+                    string_expand(info->file_name)
+                )
+            );
+        }
+    }
+}
+CUSTOM_COMMAND_SIG(lake_format_project_files)
+CUSTOM_DOC("Finds the project-root .clang-format file and runs clang-format on all relevant source files.")
+{
+    Scratch_Block scratch(app);
+
+    // Get the current file.
+    View_ID view = get_active_view(app, Access_Always);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
+
+    String_Const_u8 file_name = push_buffer_file_name(app, scratch, buffer);
+
+    if (file_name.size == 0)
+    {
+        print_message(
+            app,
+            string_u8_litexpr(
+                "[Lake] Error: Could not determine current file path.\n"
+            )
+        );
+        return;
+    }
+
+    // Start at the current file's directory.
+    String_Const_u8 directory =
+        string_remove_last_folder(file_name);
+
+    // Search upward for .clang-format.
+    String_Const_u8 clang_format_file = {};
+
+    for (;;)
+    {
+        String_Const_u8 candidate =
+            push_u8_stringf(
+                scratch,
+                "%.*s\\.clang-format",
+                string_expand(directory)
+            );
+
+        if (file_exists(
+                app, candidate))
+        {
+            clang_format_file = candidate;
+            break;
+        }
+
+        String_Const_u8 parent =
+            string_remove_last_folder(directory);
+
+        if (parent.size == directory.size)
+        {
+            break;
+        }
+
+        directory = parent;
+    }
+    if (clang_format_file.size == 0)
+    {
+        print_message(
+            app,
+            string_u8_litexpr(
+                "[Lake] Error: Could not find .clang-format in this "
+                "directory or any parent directory.\n"
+            )
+        );
+        return;
+    }
+
+    print_message(
+        app,
+        push_u8_stringf(
+            scratch,
+            "[Lake] Found .clang-format: %.*s\n",
+            string_expand(clang_format_file)
+        )
+    );
+
+    // Explicitly tell clang-format which config file to use.
+    String_Const_u8 cmd =
+        push_u8_stringf(
+            scratch,
+            "cd /d \"%.*s\" && "
+            "for /r %%i in (*.cpp *.h *.c *.cc) do "
+            "clang-format -i -style=\"file:%.*s\" \"%%i\"",
+            string_expand(directory),
+            string_expand(clang_format_file)
+        );
+
+    print_message(
+        app,
+        string_u8_litexpr(
+            "[Lake] Running clang-format across project files...\n"
+        )
+    );
+
+    Buffer_Identifier out_buffer =
+        buffer_identifier(
+            string_u8_litexpr("*clang-format*")
+        );
+
+    exec_system_command(
+        app,
+        view,
+        out_buffer,
+        directory,
+        cmd,
+        CLI_OverlapWithConflict | CLI_CursorAtEnd
+    );
+
+    Buffer_ID jump_buffer_id =
+        get_buffer_by_name(
+            app,
+            string_u8_litexpr("*clang-format*"),
+            Access_Always
+        );
+
+    if (jump_buffer_id != 0)
+    {
+        lock_jump_buffer(
+            app,
+            string_u8_litexpr("*clang-format*")
+        );
+    }
+}
+// Helper function to remove the path from a string (keeps only the filename)
+String_Const_u8 string_remove_path(String_Const_u8 string)
+{
+    u64 last_slash = 0;
+    for (u64 i = 0; i < string.size; i += 1)
+    {
+        if (string.str[i] == '/' || string.str[i] == '\\')
+        {
+            last_slash = i + 1;
+        }
+    }
+    return string_skip(string, last_slash);
+}
+
+// Helper function to remove everything from the last period onwards (e.g., removing file extension)
+String_Const_u8 string_remove_last_period(String_Const_u8 string)
+{
+    u64 last_dot = string.size;
+    for (int i = (int)string.size - 1; i >= 0; i -= 1)
+    {
+        if (string.str[i] == '.')
+        {
+            last_dot = (int)i;
+            break;
+        }
+    }
+    return string_prefix(string, last_dot);
+}
+
+// Helper function to compare two String_Const_u8 strings for equality
+b32 are_strings_equal(String_Const_u8 a, String_Const_u8 b)
+{
+    if (a.size != b.size)
+    {
+        return false;
+    }
+    for (u64 i = 0; i < a.size; i += 1)
+    {
+        if (a.str[i] != b.str[i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+CUSTOM_COMMAND_SIG(lake_insert_header_boiler)
+CUSTOM_DOC("Inserts a standard file header template for C/C++ source and header files based on the current filename.")
+{
+    Scratch_Block scratch(app);
+
+    View_ID view = get_active_view(app, Access_Always);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
+
+    String_Const_u8 file_name_str = push_buffer_file_name(app, scratch, buffer);
+    if (file_name_str.size == 0)
+    {
+        print_message(app, string_u8_litexpr("[Lake] Error: Could not determine current filename.\n"));
+        return;
+    }
+
+    // Extract file extension and base name
+    String_Const_u8 ext = string_file_extension(file_name_str);
+    String_Const_u8 base_name = string_remove_last_period(string_remove_path(file_name_str));
+
+    // Get current date (YYYY.MM.DD)
+    // Note: You can use system time functions or define a format string depending on your custom layer's date helper.
+    // For simplicity, we construct the insertion text using scratch formatting.
+
+    if (are_strings_equal(ext, string_u8_litexpr("cpp")) || are_strings_equal(ext, string_u8_litexpr("c")))
+    {
+        String_Const_u8 text_to_insert = push_u8_stringf(scratch,
+            "\n"
+            "/**\n"
+            " * @file   %.*s.%*s\n"
+            " * @author Jake Lee (lake.jee.tech@gmail.com)\n"
+            " * @brief  \n"
+            " * @date   2026.08.18\n"
+            " */\n"
+            "\n"
+            "#include \"%.*s.h\"\n"
+            "\n"
+            "// End of %.*s.%*s\n",
+            string_expand(base_name), string_expand(ext),
+            string_expand(base_name),
+            string_expand(base_name), string_expand(ext)
+        );
+
+        buffer_replace_range(app, buffer, Range_i64{0, 0}, text_to_insert);
+    }
+    else if (are_strings_equal(ext, string_u8_litexpr("h")))
+    {
+        // Convert base name to uppercase guard name if needed
+        // (Assuming you have a helper or can write out uppercase macro guards)
+        String_Const_u8 text_to_insert = push_u8_stringf(scratch,
+            "\n"
+            "/**\n"
+            " * @file   %.*s.h\n"
+            " * @author Jake Lee (lake.jee.tech@gmail.com)\n"
+            " * @brief  \n"
+            " * @date   2026.08.18\n"
+            " */\n"
+            "\n"
+            "#ifndef %.*s_H\n"
+            "#define %.*s_H\n"
+            "\n"
+            "\n"
+            "#endif // %.*s_H\n",
+            string_expand(base_name),
+            string_expand(base_name),
+            string_expand(base_name),
+            string_expand(base_name)
+        );
+
+        buffer_replace_range(app, buffer, Range_i64{0, 0}, text_to_insert);
+    }
+}
+
 function BUFFER_HOOK_SIG(lake_on_begin_buffer)
 {
+    ProfileScope(app, "begin buffer");
     default_begin_buffer(app, buffer_id);
 
     Scratch_Block scratch(app);
@@ -1032,7 +1400,7 @@ function BUFFER_HOOK_SIG(lake_on_begin_buffer)
     // that's what was scanning with 0 tokens. Tokenization isn't done yet
     // at begin_buffer time. Just flag dirty; lake_draw_cpp_token_colors
     // picks this up on the next render, once tokens actually exist.
-    print_message(app, string_u8_litexpr("[ Lake Highlight ] begin_buffer: flagged dirty (rebuild deferred to render)\n"));
+    print_message(app, string_u8_litexpr("[ Lake ] begin_buffer: flagged dirty (rebuild deferred to render)\n"));
     global_ns_cache_dirty = true;
 
     return 0;
@@ -1047,7 +1415,7 @@ function BUFFER_HOOK_SIG(lake_on_save_file)
 
     lake_queue_push(buffer_id);
     lake_drain_include_queue(app, scratch);
-    print_message(app, string_u8_litexpr("[ Lake Highlight ] save_file: flagged dirty (rebuild deferred to render)\n"));
+    print_message(app, string_u8_litexpr("[ Lake ] save_file: flagged dirty (rebuild deferred to render)\n"));
     global_ns_cache_dirty = true;
 
     return 0;
@@ -1067,7 +1435,7 @@ function BUFFER_HOOK_SIG(lake_on_save_file)
  * default behavior is lost, this only adds to it). e.g.:
  *
  *     set_all_default_hooks(app);
- *     lake_install_hooks(app);          // <-- add this line
+ *     lake_install_hooks(app);
  *     mapping_init(tctx, &framework_mapping);
  *     ...
  */

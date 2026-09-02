@@ -740,78 +740,38 @@ BUFFER_HOOK_SIG(default_begin_buffer){
     
     b32 treat_as_code = false;
     String_Const_u8 file_name = push_buffer_file_name(app, scratch, buffer_id);
-    if (file_name.size > 0){
-        String_Const_u8 treat_as_code_string = def_get_config_string(scratch, vars_save_string_lit("treat_as_code"));
-        String_Const_u8_Array extensions = parse_extension_line_to_extension_list(app, scratch, treat_as_code_string);
-        String_Const_u8 ext = string_file_extension(file_name);
-        for (i32 i = 0; i < extensions.count; ++i){
-            if (string_match(ext, extensions.strings[i])){
-                
-                if (string_match(ext, string_u8_litexpr("cpp")) ||
-                    string_match(ext, string_u8_litexpr("h")) ||
-                    string_match(ext, string_u8_litexpr("c")) ||
-                    string_match(ext, string_u8_litexpr("hpp")) ||
-                    string_match(ext, string_u8_litexpr("cc"))){
-                    treat_as_code = true;
-                }
-                
-#if 0
+
+    if (file_name.size > 0) {
+        // 1. Extract only the filename from the full path so directory dots (like "14.41.34120") don't interfere
+        u64 last_slash = string_find_last_slash(file_name); // or custom path divider check if 4coder uses a helper
+        String_Const_u8 base_name = file_name;
+        if (last_slash < file_name.size) {
+            base_name = string_skip(file_name, last_slash + 1);
+        }
+
+        // 2. Get the extension strictly from the filename, not the full path
+        String_Const_u8 ext = string_file_extension(base_name);
+
+        // 3. Extensionless standard headers (like vector, cstdint) or code files
+        if (ext.size == 0) {
+            treat_as_code = true;
+        } 
+        else {
+            if (string_match(ext, string_u8_litexpr("cpp")) ||
+                string_match(ext, string_u8_litexpr("h"))   ||
+                string_match(ext, string_u8_litexpr("c"))   ||
+                string_match(ext, string_u8_litexpr("hpp")) ||
+                string_match(ext, string_u8_litexpr("cc"))) {
                 treat_as_code = true;
-                
-                if (string_match(ext, string_u8_litexpr("cs"))){
-                    if (parse_context_language_cs == 0){
-                        init_language_cs(app);
-                    }
-                    parse_context_id = parse_context_language_cs;
-                }
-                
-                if (string_match(ext, string_u8_litexpr("java"))){
-                    if (parse_context_language_java == 0){
-                        init_language_java(app);
-                    }
-                    parse_context_id = parse_context_language_java;
-                }
-                
-                if (string_match(ext, string_u8_litexpr("rs"))){
-                    if (parse_context_language_rust == 0){
-                        init_language_rust(app);
-                    }
-                    parse_context_id = parse_context_language_rust;
-                }
-                
-                if (string_match(ext, string_u8_litexpr("cpp")) ||
-                    string_match(ext, string_u8_litexpr("h")) ||
-                    string_match(ext, string_u8_litexpr("c")) ||
-                    string_match(ext, string_u8_litexpr("hpp")) ||
-                    string_match(ext, string_u8_litexpr("cc"))){
-                    if (parse_context_language_cpp == 0){
-                        init_language_cpp(app);
-                    }
-                    parse_context_id = parse_context_language_cpp;
-                }
-                
-                // TODO(NAME): Real GLSL highlighting
-                if (string_match(ext, string_u8_litexpr("glsl"))){
-                    if (parse_context_language_cpp == 0){
-                        init_language_cpp(app);
-                    }
-                    parse_context_id = parse_context_language_cpp;
-                }
-                
-                // TODO(NAME): Real Objective-C highlighting
-                if (string_match(ext, string_u8_litexpr("m"))){
-                    if (parse_context_language_cpp == 0){
-                        init_language_cpp(app);
-                    }
-                    parse_context_id = parse_context_language_cpp;
-                }
-#endif
-                
-                break;
             }
         }
     }
-    
+
+    //String_Const_u8 msg = push_u8_stringf(scratch.arena,
+    //    "[ Lake ] file '%.*s' treat_as_code = %d\n",
+    //    string_expand(file_name), treat_as_code);
+    //print_message(app, msg);
+
     String_ID file_map_id = vars_save_string_lit("keys_file");
     String_ID code_map_id = vars_save_string_lit("keys_code");
     
